@@ -35,19 +35,28 @@ bool screen::init()
   buffer = new Uint32[SCREEN_WIDTH * SCREEN_HEIGHT];
   memset(buffer, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
 
-  for (int i = 0; i < SCREEN_HEIGHT * SCREEN_WIDTH; i++)
-  {
-    if (i % 2 == 0)
-      buffer[i] = 0x0000FF00;
-    else
-      buffer[i] = 0x00000000;
-  }
+  return true;
+}
 
+void screen::update()
+{
   SDL_UpdateTexture(texture, NULL, buffer, SCREEN_WIDTH * sizeof(Uint32));
   SDL_RenderClear(renderer);
   SDL_RenderCopy(renderer, texture, NULL, NULL);
   SDL_RenderPresent(renderer);
-  return true;
+}
+
+void screen::setPixel(int x, int y, Uint8 red, Uint8 green, Uint8 blue)
+{
+  Uint32 color = 0;
+  color += red;
+  color <<= 8;
+  color += green;
+  color <<= 8;
+  color += blue;
+  color <<= 8;
+  color += 0xFF;
+  buffer[(y * SCREEN_WIDTH) + x] = color;
 }
 
 void screen::close()
