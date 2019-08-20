@@ -22,6 +22,9 @@ Run with:
 
 When executed it will create 500 particles in the centre of the screated screen, and they will move in the form of an explosion. You can change number of particles by changing the number to any other integer number while executing (default is set to 10000). After execting you should see an explosion as shown in the results section.
 
+### TODO
+Add mouse curser and click events to get more interactive experience.
+
 ## Results
 
 <p align="center">
