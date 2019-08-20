@@ -12,6 +12,10 @@ int main(int argc, char **argv)
   Screen screen;
   Swarm swarm;
 
+  //for configuring number of point using command line - default is 10000 particles
+  if (argv[1])
+    swarm.N_PARTICLES = atoi(argv[1]);
+
   if (screen.init() == false)
   {
     std::cout << "Error initailizing sdl";
