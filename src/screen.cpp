@@ -1,21 +1,22 @@
 #include <iostream>
 #include "../include/screen.h"
+#include "../include/particle.h"
 
 using namespace std;
 
-screen::screen() : window(NULL),
+Screen::Screen() : window(NULL),
                    renderer(NULL),
                    texture(NULL),
                    buffer(NULL){};
 
-bool screen::init()
+bool Screen::init()
 {
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
   {
     cout << "SDL init failed\n";
     return false;
   }
-  window = SDL_CreateWindow("particle simulation", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+  window = SDL_CreateWindow("particle explosion", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
   texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STATIC, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -38,7 +39,7 @@ bool screen::init()
   return true;
 }
 
-void screen::update()
+void Screen::update()
 {
   SDL_UpdateTexture(texture, NULL, buffer, SCREEN_WIDTH * sizeof(Uint32));
   SDL_RenderClear(renderer);
@@ -46,8 +47,17 @@ void screen::update()
   SDL_RenderPresent(renderer);
 }
 
-void screen::setPixel(int x, int y, Uint8 red, Uint8 green, Uint8 blue)
+void Screen::clear()
 {
+  memset(buffer, 0, (SCREEN_WIDTH * SCREEN_HEIGHT) * sizeof(Uint32));
+}
+
+void Screen::setPixel(int x, int y, Uint8 red, Uint8 green, Uint8 blue)
+{
+  if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT)
+  {
+    return;
+  }
   Uint32 color = 0;
   color += red;
   color <<= 8;
@@ -59,23 +69,30 @@ void screen::setPixel(int x, int y, Uint8 red, Uint8 green, Uint8 blue)
   buffer[(y * SCREEN_WIDTH) + x] = color;
 }
 
-void screen::close()
+void Screen::close()
 {
   delete[] buffer;
+  delete[] blur_buffer;
   SDL_DestroyRenderer(renderer);
   SDL_DestroyTexture(texture);
   SDL_DestroyWindow(window);
   SDL_Quit();
 }
 
-bool screen::processEvents()
+bool Screen::processEvents()
 {
   SDL_Event event;
   while (SDL_PollEvent(&event))
   {
-    if (event.type == SDL_QUIT)
+    switch (event.type)
     {
+    case SDL_QUIT:
       return false;
+      break;
+    default:
+      break;
+      // case SDL_MOUSEMOTION:
+      // cout << event.motion.x << "\t" << event.motion.y << "\n";
     }
   }
   return true;
